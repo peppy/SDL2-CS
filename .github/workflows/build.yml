@@ -3,6 +3,28 @@ on: [push]
 #  schedule:
 #    - cron: '0 0 * * *'
 jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check out SDL sources
+      run: |
+        hg clone https://hg.libsdl.org/SDL ../sdl-source
+    - name: Build binaries
+      run: |
+        cd ../sdl-source
+        ./configure
+        make
+        make install
+        # cp lib/SDL2.dll ../SDL2-CS/native/win-x64/SDL2.dll
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v2
+      with:
+        commit-message: Update windows SDL binaries
+        title: Update windows SDL binaries
+        body: This PR has been auto-generated to update the windows SDL binaries.
+        branch: update-windows-binaries
+
   build-macos:
     runs-on: macos-latest
     steps:
